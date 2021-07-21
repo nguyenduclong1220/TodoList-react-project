@@ -1,11 +1,13 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import Todo from './Todo';
 import TodoForm from './TodoForm'
+
+const TODO_APP_STORAGE_KEY = "TODO_APP";
 
 function TodoList() {
     const [todos,setTodos] = useState([]); // truyền todo vào, giá trị là 1 mảng
 
-    const addTodo = todo => {              //thêm todo
+    const addTodo = todo => {              // thêm todo
         if(!todo.text || /^\s*$/.test(todo.text)) {
             return 
         };
@@ -28,7 +30,7 @@ function TodoList() {
     };
  
 
-    const completeTodo = id => {                     // todo hoàn thành 
+    const completeTodo = id => {                     // todo hoàn thành, nhấn vào hiện complete 
         let updateTodos = todos.map(todo => {
             if (todo.id === id) {
             todo.isComplete = !todo.isComplete
@@ -37,6 +39,18 @@ function TodoList() {
         })
         setTodos(updateTodos);
     }
+
+    // lưu todo vào localStorage, reload trang không bị mất     
+    useEffect(() => {     
+        const storagedTodos = localStorage.getItem(TODO_APP_STORAGE_KEY);
+        if (storagedTodos) {
+          setTodos(JSON.parse(storagedTodos));
+        }
+      }, []);
+    
+      useEffect(() => {
+        localStorage.setItem(TODO_APP_STORAGE_KEY, JSON.stringify(todos));
+      }, [todos]);
 
     return (
         <div>
@@ -47,4 +61,4 @@ function TodoList() {
     )
 }
 
-export default TodoList
+export default TodoList;
